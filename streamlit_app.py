@@ -1,6 +1,8 @@
 import calendar
 from datetime import date, datetime, time, timedelta
 
+import pandas as pd
+import plotly.express as px
 import streamlit as st
 
 
@@ -292,12 +294,16 @@ def empty_state(icon, title, subtitle=""):
 
 def appointment_card(appointment):
     volunteer = appointment["volunteer"] or "Unassigned"
+    urgency = appointment.get("urgency", "Routine")
+    user_type = appointment.get("user_type", "Regular User")
+    score = appointment.get("priority_score", 0)
     st.markdown(
         f"""
         <div class="appointment-card">
             <div class="card-title">{appointment["title"]}</div>
             <div class="card-meta">{appointment["date"].strftime("%b %d, %Y")} at {appointment["time"].strftime("%I:%M %p")}</div>
             <div class="card-meta">{volunteer}</div>
+            <div class="card-meta">{user_type} · {urgency} · Priority {score}</div>
             <div class="pill">{appointment["status"]}</div>
         </div>
         """,
@@ -342,8 +348,36 @@ def upcoming_appointments(days=7):
     end = date.today() + timedelta(days=days)
     return sorted(
         [item for item in st.session_state.appointments if date.today() <= item["date"] <= end],
-        key=lambda item: (item["date"], item["time"]),
+        key=lambda item: (-item.get("priority_score", 0), item["date"], item["time"]),
     )
+
+
+def priority_score(urgency, user_type):
+    urgency_weight = {"Routine": 1, "Urgent": 3}
+    user_type_weight = {"Regular User": 1, "Admin Slot": 3}
+    return urgency_weight[urgency] * 2 + user_type_weight[user_type]
+
+
+def appointments_frame():
+    if not st.session_state.appointments:
+        return pd.DataFrame()
+
+    records = []
+    for item in st.session_state.appointments:
+        records.append(
+            {
+                "title": item["title"],
+                "date": item["date"],
+                "hour": item["time"].strftime("%I %p"),
+                "hour_value": item["time"].hour,
+                "volunteer": item["volunteer"] or "Unassigned",
+                "status": item["status"],
+                "urgency": item.get("urgency", "Routine"),
+                "user_type": item.get("user_type", "Regular User"),
+                "priority_score": item.get("priority_score", 0),
+            }
+        )
+    return pd.DataFrame(records)
 
 
 dashboard_tab, calendar_tab, volunteers_tab, settings_tab = st.tabs(
@@ -390,6 +424,67 @@ with dashboard_tab:
     else:
         st.info("All shifts are assigned.")
 
+    st.markdown("<div class='section-title'>Priority Scheduling Queue</div>", unsafe_allow_html=True)
+    st.caption("Priority score = urgency × 2 + user type weight. Admin slots and urgent appointments rise first.")
+    priority_items = sorted(st.session_state.appointments, key=lambda item: (-item.get("priority_score", 0), item["date"], item["time"]))
+    if priority_items:
+        for appointment in priority_items[:5]:
+            appointment_card(appointment)
+    else:
+        st.info("No appointments are queued yet.")
+
+    st.markdown("<div class='section-title'>Scheduling Analytics Dashboard</div>", unsafe_allow_html=True)
+    analytics_df = appointments_frame()
+    if analytics_df.empty:
+        st.info("Add appointments to unlock peak-hour, utilization, and cancellation analytics.")
+    else:
+        total_capacity = 8 * 7
+        active_bookings = len(analytics_df[analytics_df["status"] != "Cancelled"])
+        utilization_rate = min(active_bookings / total_capacity, 1.0)
+        cancelled_count = len(analytics_df[analytics_df["status"] == "Cancelled"])
+        cancellation_rate = cancelled_count / len(analytics_df)
+
+        metric_col1, metric_col2, metric_col3 = st.columns(3)
+        metric_col1.metric("Utilization", f"{utilization_rate:.0%}")
+        metric_col2.metric("Cancellations", f"{cancelled_count}")
+        metric_col3.metric("Cancellation Rate", f"{cancellation_rate:.0%}")
+
+        peak_hours = (
+            analytics_df.groupby(["hour_value", "hour"], as_index=False)
+            .size()
+            .sort_values("hour_value")
+        )
+        fig_peak = px.bar(
+            peak_hours,
+            x="hour",
+            y="size",
+            title="Peak Booking Hours",
+            labels={"hour": "Hour", "size": "Appointments"},
+            color="size",
+            color_continuous_scale=["#f7e2b8", "#c98f2d", "#9f3c32"],
+        )
+        fig_peak.update_layout(coloraxis_showscale=False, margin=dict(l=10, r=10, t=48, b=10))
+        st.plotly_chart(fig_peak, use_container_width=True)
+
+        status_by_date = (
+            analytics_df.assign(date=pd.to_datetime(analytics_df["date"]))
+            .groupby(["date", "status"], as_index=False)
+            .size()
+            .sort_values("date")
+        )
+        fig_cancel = px.line(
+            status_by_date,
+            x="date",
+            y="size",
+            color="status",
+            markers=True,
+            title="Cancellation Patterns",
+            labels={"date": "Date", "size": "Appointments"},
+            color_discrete_map={"Scheduled": "#c98f2d", "Unassigned": "#52657f", "Cancelled": "#9f3c32"},
+        )
+        fig_cancel.update_layout(margin=dict(l=10, r=10, t=48, b=10))
+        st.plotly_chart(fig_cancel, use_container_width=True)
+
 
 with calendar_tab:
     page_header("Calendar", "View your schedule by month, week, or day")
@@ -426,18 +521,26 @@ with calendar_tab:
         appointment_time = st.time_input("Time", value=time(9, 0))
         volunteer_names = [""] + [volunteer["name"] for volunteer in st.session_state.volunteers]
         volunteer = st.selectbox("Assigned volunteer", volunteer_names, format_func=lambda value: "Unassigned" if value == "" else value)
+        urgency = st.selectbox("Urgency", ["Routine", "Urgent"])
+        user_type = st.selectbox("Slot type", ["Regular User", "Admin Slot"])
+        status_options = ["Scheduled", "Cancelled"] if volunteer else ["Unassigned", "Cancelled"]
+        status = st.selectbox("Status", status_options)
         submitted = st.form_submit_button("Add appointment")
         if submitted and title:
+            score = priority_score(urgency, user_type)
             st.session_state.appointments.append(
                 {
                     "title": title,
                     "date": appointment_date,
                     "time": appointment_time,
                     "volunteer": volunteer,
-                    "status": "Scheduled" if volunteer else "Unassigned",
+                    "status": status,
+                    "urgency": urgency,
+                    "user_type": user_type,
+                    "priority_score": score,
                 }
             )
-            st.success("Appointment added.")
+            st.success(f"Appointment added with priority score {score}.")
 
 
 with volunteers_tab:
