@@ -424,15 +424,6 @@ with dashboard_tab:
     else:
         st.info("All shifts are assigned.")
 
-    st.markdown("<div class='section-title'>Priority Scheduling Queue</div>", unsafe_allow_html=True)
-    st.caption("Priority score = urgency × 2 + user type weight. Admin slots and urgent appointments rise first.")
-    priority_items = sorted(st.session_state.appointments, key=lambda item: (-item.get("priority_score", 0), item["date"], item["time"]))
-    if priority_items:
-        for appointment in priority_items[:5]:
-            appointment_card(appointment)
-    else:
-        st.info("No appointments are queued yet.")
-
     st.markdown("<div class='section-title'>Scheduling Analytics Dashboard</div>", unsafe_allow_html=True)
     analytics_df = appointments_frame()
     if analytics_df.empty:
