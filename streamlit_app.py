@@ -380,6 +380,38 @@ def appointments_frame():
     return pd.DataFrame(records)
 
 
+def working_day_slots():
+    return [time(hour, 0) for hour in range(9, 17)]
+
+
+def is_slot_taken(appointment_date, appointment_time):
+    return any(
+        item["date"] == appointment_date
+        and item["time"] == appointment_time
+        and item["status"] != "Cancelled"
+        for item in st.session_state.appointments
+    )
+
+
+def available_slots_for_date(appointment_date):
+    return [slot for slot in working_day_slots() if not is_slot_taken(appointment_date, slot)]
+
+
+def next_best_options(appointment_date, appointment_time, limit=3):
+    same_day_slots = [
+        slot for slot in available_slots_for_date(appointment_date)
+        if slot > appointment_time
+    ]
+    options = [(appointment_date, slot) for slot in same_day_slots]
+
+    next_day = appointment_date + timedelta(days=1)
+    while len(options) < limit:
+        options.extend((next_day, slot) for slot in available_slots_for_date(next_day))
+        next_day += timedelta(days=1)
+
+    return options[:limit]
+
+
 dashboard_tab, calendar_tab, volunteers_tab, settings_tab = st.tabs(
     ["▦\nDashboard", "▣\nCalendar", "♟\nVolunteers", "⚙\nSettings"]
 )
@@ -505,6 +537,17 @@ with calendar_tab:
         else:
             empty_state("▣", "No appointments scheduled")
 
+    st.markdown("<div class='section-title'>Slot Availability</div>", unsafe_allow_html=True)
+    st.caption("Booked and available slots for the selected date.")
+    slot_col1, slot_col2 = st.columns(2)
+    for index, slot in enumerate(working_day_slots()):
+        target_col = slot_col1 if index % 2 == 0 else slot_col2
+        with target_col:
+            if is_slot_taken(selected_date, slot):
+                st.error(f"❌ Unavailable · {slot.strftime('%I:%M %p')}")
+            else:
+                st.success(f"✅ Available · {slot.strftime('%I:%M %p')}")
+
     st.markdown("<div class='section-title'>Add Appointment</div>", unsafe_allow_html=True)
     with st.form("appointment_form", clear_on_submit=True):
         title = st.text_input("Appointment title", placeholder="Food pantry intake")
@@ -519,19 +562,26 @@ with calendar_tab:
         submitted = st.form_submit_button("Add appointment")
         if submitted and title:
             score = priority_score(urgency, user_type)
-            st.session_state.appointments.append(
-                {
-                    "title": title,
-                    "date": appointment_date,
-                    "time": appointment_time,
-                    "volunteer": volunteer,
-                    "status": status,
-                    "urgency": urgency,
-                    "user_type": user_type,
-                    "priority_score": score,
-                }
-            )
-            st.success(f"Appointment added with priority score {score}.")
+            if status != "Cancelled" and is_slot_taken(appointment_date, appointment_time):
+                st.warning("This slot is taken. Here are the next best options:")
+                for option_date, option_time in next_best_options(appointment_date, appointment_time):
+                    st.info(f"{option_date.strftime('%b %d, %Y')} at {option_time.strftime('%I:%M %p')}")
+                st.error("❌ Unavailable")
+            else:
+                st.session_state.appointments.append(
+                    {
+                        "title": title,
+                        "date": appointment_date,
+                        "time": appointment_time,
+                        "volunteer": volunteer,
+                        "status": status,
+                        "urgency": urgency,
+                        "user_type": user_type,
+                        "priority_score": score,
+                    }
+                )
+                st.success("✅ Booked")
+                st.success(f"Appointment added with priority score {score}.")
 
 
 with volunteers_tab:
