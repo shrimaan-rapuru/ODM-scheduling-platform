@@ -1,12 +1,9 @@
 # 📅 ODM Volunteer Scheduling Platform
 
-> A full-stack scheduling and coordination tool built to solve real operational problems at a nonprofit serving 75–100 homeless residents weekly.
+> A full-stack scheduling and coordination tool built to solve real operational problems at a nonprofit serving 70–75 homeless residents weekly.
 
 **Live App:** [scheduling-platform.streamlit.app](https://scheduling-platform.streamlit.app/)
 
-[![Python](https://img.shields.io/badge/Python-3.10+-blue?style=flat&logo=python)](https://python.org)
-[![Streamlit](https://img.shields.io/badge/Streamlit-deployed-FF4B4B?style=flat&logo=streamlit)](https://scheduling-platform.streamlit.app/)
-[![Status](https://img.shields.io/badge/Status-Proposed%20Solution-yellow?style=flat)]()
 
 ---
 
@@ -36,19 +33,19 @@ The platform gives organizers a single place to manage shifts, track availabilit
 ## 📸 Screenshots
 
 ### Dashboard — Shift Overview & Analytics
-![Dashboard](assets/dashboard.jpg)
+![Dashboard](asset/dashboard.jpg)
 > *Real-time view of today's appointments, next 7 days, unassigned shifts, and scheduling analytics.*
 
 ### Calendar — Slot Availability & Appointment Booking
-![Calendar](assets/calendar.jpg)
+![Calendar](asset/calendar.jpg)
 > *Month, week, and day views with available time slots. Staff can create appointments with assigned volunteers, urgency levels, and status tracking.*
 
 ### Volunteer Roster — Role & Availability Management
-![Volunteers](assets/volunteers.jpg)
+![Volunteers](asset/volunteers.jpg)
 > *Add volunteers, assign roles (e.g. Front Desk, Kitchen), and set availability for scheduling.*
 
 ### Settings — Users & Notifications
-![Settings](assets/settings.jpg)
+![Settings](asset/settings.jpg)
 > *Manage users, toggle push notifications, and configure appearance preferences.*
 
 > 💡 **To add screenshots:** Save your images to an `assets/` folder in this repo named `dashboard.jpg`, `calendar.jpg`, `volunteers.jpg`, and `settings.jpg` — they will render automatically.
