@@ -9,7 +9,7 @@
 
 ## 🧩 The Problem
 
-Volunteer scheduling and coordination for meal service operations at **Open Door Ministries (ODM)** — a nonprofit in High Point, NC serving 75–100 homeless residents weekly — was inefficient and difficult to manage manually.
+Volunteer scheduling and coordination for meal service operations at **Open Door Ministries (ODM)** — a nonprofit in High Point, NC serving 70–75 homeless residents weekly — was inefficient and difficult to manage manually.
 
 After joining ODM as a volunteer in January 2024, I observed the same pattern repeatedly:
 
