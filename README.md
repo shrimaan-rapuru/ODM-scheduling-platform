@@ -33,22 +33,25 @@ The platform gives organizers a single place to manage shifts, track availabilit
 ## 📸 Screenshots
 
 ### Dashboard — Shift Overview & Analytics
-![Dashboard](asset/dashboard.jpg)
+<img width="389" height="874" alt="dashboard" src="https://github.com/user-attachments/assets/60fac4da-35fc-4728-8012-986da8d6b2ae" />
+
 > *Real-time view of today's appointments, next 7 days, unassigned shifts, and scheduling analytics.*
 
 ### Calendar — Slot Availability & Appointment Booking
-![Calendar](asset/calendar.jpg)
+<img width="333" height="855" alt="calender" src="https://github.com/user-attachments/assets/4d9efdac-93c5-4626-ab6a-33a08e179209" />
+
 > *Month, week, and day views with available time slots. Staff can create appointments with assigned volunteers, urgency levels, and status tracking.*
 
 ### Volunteer Roster — Role & Availability Management
-![Volunteers](asset/volunteers.jpg)
+<img width="362" height="678" alt="volunteers" src="https://github.com/user-attachments/assets/d593d5e2-9026-4cc5-97f6-d87524832eb2" />
+
 > *Add volunteers, assign roles (e.g. Front Desk, Kitchen), and set availability for scheduling.*
 
 ### Settings — Users & Notifications
-![Settings](asset/settings.jpg)
+<img width="372" height="459" alt="settings" src="https://github.com/user-attachments/assets/8b484bfb-4faf-404d-ae5c-cd30aee5bbd7" />
+
 > *Manage users, toggle push notifications, and configure appearance preferences.*
 
-> 💡 **To add screenshots:** Save your images to an `assets/` folder in this repo named `dashboard.jpg`, `calendar.jpg`, `volunteers.jpg`, and `settings.jpg` — they will render automatically.
 
 ---
 
