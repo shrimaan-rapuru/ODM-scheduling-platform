@@ -1,76 +1,173 @@
 # 📅 ODM Volunteer Scheduling Platform
 
-> A full-stack scheduling tool built to solve real coordination problems at a nonprofit serving 70–75 homeless residents weekly.
+> A full-stack scheduling and coordination tool built to solve real operational problems at a nonprofit serving 75–100 homeless residents weekly.
 
 **Live App:** [scheduling-platform.streamlit.app](https://scheduling-platform.streamlit.app/)
 
----
-
-## Overview
-
-The ODM Scheduling Platform is a volunteer coordination web app designed for **Open Door Ministries (ODM)**, a nonprofit in High Point, NC. Built independently after observing recurring inefficiencies in volunteer scheduling during my time as a Community Service Leader, this platform was developed as a proposed solution and presented to ODM leadership.
-
-The project taught me as much about organizational constraints and human systems as it did about software — a lesson that shaped how I think about building technology for real communities.
+[![Python](https://img.shields.io/badge/Python-3.10+-blue?style=flat&logo=python)](https://python.org)
+[![Streamlit](https://img.shields.io/badge/Streamlit-deployed-FF4B4B?style=flat&logo=streamlit)](https://scheduling-platform.streamlit.app/)
+[![Status](https://img.shields.io/badge/Status-Proposed%20Solution-yellow?style=flat)]()
 
 ---
 
-## Features
+## 🧩 The Problem
 
-- **Dashboard** — Real-time overview of today's appointments, upcoming shifts (next 7 days), unassigned roles, and scheduling analytics
-- **Calendar View** — Month, week, and day views with slot availability tracking and appointment creation
+Volunteer scheduling and coordination for meal service operations at **Open Door Ministries (ODM)** — a nonprofit in High Point, NC serving 75–100 homeless residents weekly — was inefficient and difficult to manage manually.
+
+After joining ODM as a volunteer in January 2024, I observed the same pattern repeatedly:
+
+- Some mornings had too many volunteers crowding the kitchen; other mornings had too few
+- Food ran short one week and went to waste the next
+- Shift gaps weren't caught until the day of service
+- There was no centralized system for tracking who was coming, what roles needed filling, or where shortages were forming in advance
+
+Coordination relied on informal communication — group texts, word of mouth, manual sign-up sheets — creating unnecessary friction for a team doing important community work.
+
+---
+
+## 💡 The Solution
+
+I built the **ODM Volunteer Scheduling Platform** — a centralized, web-based scheduling and coordination system designed to streamline volunteer management and reduce manual overhead.
+
+The platform gives organizers a single place to manage shifts, track availability, assign roles, and send automated reminders — replacing fragmented communication with a structured digital workflow.
+
+---
+
+## 📸 Screenshots
+
+### Dashboard — Shift Overview & Analytics
+![Dashboard](assets/dashboard.jpg)
+> *Real-time view of today's appointments, next 7 days, unassigned shifts, and scheduling analytics.*
+
+### Calendar — Slot Availability & Appointment Booking
+![Calendar](assets/calendar.jpg)
+> *Month, week, and day views with available time slots. Staff can create appointments with assigned volunteers, urgency levels, and status tracking.*
+
+### Volunteer Roster — Role & Availability Management
+![Volunteers](assets/volunteers.jpg)
+> *Add volunteers, assign roles (e.g. Front Desk, Kitchen), and set availability for scheduling.*
+
+### Settings — Users & Notifications
+![Settings](assets/settings.jpg)
+> *Manage users, toggle push notifications, and configure appearance preferences.*
+
+> 💡 **To add screenshots:** Save your images to an `assets/` folder in this repo named `dashboard.jpg`, `calendar.jpg`, `volunteers.jpg`, and `settings.jpg` — they will render automatically.
+
+---
+
+## ✨ Features
+
+- **Shift Dashboard** — Real-time overview of today's appointments, next 7 days, unassigned roles, and scheduling analytics
+- **Calendar View** — Month, week, and day views with slot availability tracking
 - **Appointment Management** — Create appointments with title, date, time, assigned volunteer, urgency level, slot type, and status
 - **Volunteer Roster** — Add and manage volunteers with role assignments and availability settings
-- **Push Notifications** — Automated reminders to reduce no-shows and last-minute gaps
-- **Settings** — User management, notification preferences, and appearance options
+- **Push Notifications** — Automated reminders to reduce no-shows and last-minute coordination gaps
+- **User Management** — Settings panel for managing users, notification preferences, and appearance
 
 ---
 
-## Tech Stack
+## 🏗️ Architecture
 
-| Layer | Technology |
-|-------|-----------|
-| Language | Python |
-| Framework | Streamlit |
-| Data Storage | Session state / local data layer |
-| Notifications | Push notification support |
+```
+User Interface (Streamlit)
+        ↓
+App Logic (Python)
+  ├── Dashboard module    → Aggregates shift data, flags unassigned roles
+  ├── Calendar module     → Slot availability, appointment CRUD
+  ├── Volunteer module    → Roster management, role/availability assignment
+  └── Notification module → Push notification triggers for upcoming shifts
+        ↓
+Data Layer (Streamlit session state / local storage)
+```
+
+### Key Technical Decisions
+
+- **Streamlit** chosen for rapid deployment and accessible UI without requiring a separate frontend framework
+- **Session state management** used to maintain app state across user interactions without a persistent database — appropriate for a prototype/proposal context
+- **Push notification layer** designed as an optional module that can be connected to a real notification service (e.g. Twilio, SendGrid) once the platform is adopted
+- **Modular 4-view structure** (Dashboard, Calendar, Volunteers, Settings) mirrors how nonprofit staff actually think about coordination — by day, by role, and by person
+
+### Technical Challenges Solved
+
+- **Slot conflict detection** — Calendar logic checks for overlapping appointments and flags unassigned slots before they become day-of problems
+- **Role-based availability** — Volunteer module supports multiple role types and availability windows, enabling smarter assignment rather than first-come-first-served signup
+- **Intuitive UI for non-technical users** — The platform was designed for nonprofit staff, not developers. Every interaction was simplified to minimize onboarding friction
 
 ---
 
-## Getting Started
+## 🛠️ Tech Stack
 
-```bash
-# Clone the repository
-git clone https://github.com/shrimaan-rapuru/odm-scheduling-platform.git
-cd odm-scheduling-platform
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| Language | Python 3.10+ | Core application logic |
+| Framework | Streamlit | Frontend UI and deployment |
+| Data Layer | Session state | In-app state management (prototype) |
+| Notifications | Push notification module | Automated shift reminders |
+| Deployment | Streamlit Cloud | Public hosting |
 
-# Install dependencies
-pip install -r requirements.txt
+---
 
-# Run the app
-streamlit run app.py
+## 📁 Project Structure
+
+```
+odm-scheduling-platform/
+├── app.py                  # Main Streamlit application
+├── pages/
+│   ├── dashboard.py        # Shift overview and analytics
+│   ├── calendar.py         # Slot availability and booking
+│   ├── volunteers.py       # Roster and role management
+│   └── settings.py         # User and notification settings
+├── assets/
+│   ├── dashboard.jpg       # Screenshots for README
+│   ├── calendar.jpg
+│   ├── volunteers.jpg
+│   └── settings.jpg
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-## Project Background
+## 📊 Impact
 
-After joining Open Door Ministries as a volunteer in January 2024, I noticed a consistent pattern: some mornings had too many volunteers, others too few. Food ran short one week and went to waste the next. As someone drawn to systems thinking, I mapped the inefficiencies and built this platform as a proposed solution.
+- Designed to support weekly coordination for meal service operations serving **75–100 homeless residents** per week
+- Addresses scheduling gaps that previously caused food shortages and volunteer overcrowding
+- Built and **presented to ODM's operating director** as a formal proposal with written documentation
+- Demonstrates how a single-developer tool can reduce operational friction for community organizations running on limited resources
 
-The platform was presented to ODM's operating director. It wasn't implemented — not because of the software, but because of organizational constraints I hadn't fully accounted for: data privacy considerations, staff capacity to onboard a new system, and existing workflows that a new tool would have to integrate with.
+---
 
-That experience — building something technically sound that still didn't fit — was one of the most formative lessons of my engineering education so far.
+## 🔭 Future Improvements
+
+- [ ] **Database integration** — Replace session state with a persistent backend (SQLite or Firebase) so data carries across sessions and users
+- [ ] **SMS/email notifications** — Connect notification module to Twilio or SendGrid for real reminder delivery to volunteers' phones
+- [ ] **Volunteer self-signup** — Allow volunteers to claim open shifts directly from a public-facing view without admin involvement
+- [ ] **Recurring shift templates** — Let admins create repeating weekly schedules instead of manually entering each week
+- [ ] **Attendance tracking** — Log who showed up vs. who was assigned to build historical reliability data per volunteer
+- [ ] **Role-based access control** — Separate admin and volunteer views with login authentication
+- [ ] **Analytics dashboard** — Track trends over time: volunteer utilization, peak demand periods, no-show rates
+
+---
+
+## 💬 Why I Built This
+
+I didn't start this project to build software. I started it because I showed up every Saturday morning to serve breakfast and kept watching the same problems repeat themselves.
+
+The real lesson came when I presented the platform and it wasn't adopted — not because of the code, but because I hadn't fully understood the organizational constraints I was designing for. That experience shaped how I think about engineering more than any successful deployment would have.
 
 > *"My solution didn't fit a system I hadn't fully understood."*
 
----
-
-## Status
-
-This is an independent project built as a proposal for ODM. It is not officially affiliated with or deployed by Open Door Ministries.
+Building something technically correct and building something that actually works for a community are two different things. Closing that gap is the work I want to keep doing.
 
 ---
 
-## Author
+## ⚠️ Status
+
+This is an **independent project built as a proposal** for Open Door Ministries. It is not officially affiliated with or deployed by ODM.
+
+---
+
+## 👤 Author
 
 **Shrimaan Rapuru**
-[LinkedIn](https://linkedin.com/in/shrimaan-rapuru-439689329) · [GitHub](https://github.com/shrimaan-rapuru)
+[LinkedIn](https://linkedin.com/in/shrimaan-rapuru-439689329) · [GitHub](https://github.com/shrimaan-rapuru) · [Live App](https://scheduling-platform.streamlit.app/)
