@@ -5,7 +5,7 @@
 **Live App:** [scheduling-platform.streamlit.app](https://scheduling-platform.streamlit.app/)
 
 ---
-asset/dashboard.jpeg
+#asset/dashboard.jpeg
 
 ## Overview
 
